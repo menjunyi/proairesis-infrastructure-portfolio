@@ -1,0 +1,5 @@
+environment         = "staging"
+site_hostname       = "staging.example.com"
+hosted_zone_id      = "ZEXAMPLE"
+monthly_budget_usd  = 10
+budget_alert_emails = ["operator@example.com"]
