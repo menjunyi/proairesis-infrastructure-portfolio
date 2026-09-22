@@ -3,6 +3,6 @@
   "private": true,
   "type": "module",
   "license": "PolyForm-Noncommercial-1.0.0",
-  "scripts": { "test": "node --test tests/*.test.mjs" },
+  "scripts": { "test": "node --test tests/*.test.mjs", "check:privacy": "node scripts/privacy-check.mjs" },
   "engines": { "node": ">=22" }
 }

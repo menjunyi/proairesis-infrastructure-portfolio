@@ -4,7 +4,17 @@ Reusable AWS infrastructure extracted from my Proairesis project, with productio
 
 **Source-available for noncommercial use only.** See [LICENSE.md](LICENSE.md) and [NOTICE](NOTICE). Commercial use requires separate permission from Junyi Men. This is not an open-source licence.
 
-## Start with these files
+## Publication safeguards
+
+- `main` requires a pull request, an up-to-date branch and successful GitHub Actions checks named `validate` and `privacy-secrets`. Protection applies to administrators; force pushes and branch deletion are blocked. As a solo-maintainer repository, no second-person approval is required, but a PR and passing checks are mandatory.
+- Workflows from all outside contributors require maintainer approval. Inspect proposed workflow and script changes before approving a run.
+- `privacy-secrets` scans Git history with checksum-pinned Gitleaks and generic privacy rules. Non-example AWS account identifiers, hard-coded trust subjects, Google integration URLs, personal paths, live company URLs and private state/config files are rejected. Real private identifiers are not embedded in the public scanner.
+- CI stays credential-free with read-only repository permissions. Do not add production secrets, deployment environments, OIDC token permissions, self-hosted runners or real deployment jobs to this repository. Use a separate private deployment repository.
+- Pattern scanning is defence in depth, not proof that arbitrary private data cannot be committed. CI runs after a push, so a failing check cannot undo a disclosure on a public branch. Review files and scan locally before pushing.
+
+Run `npm test`, then stage reviewed files and run `npm run check:privacy` before committing/pushing. The privacy check scans all reachable commits plus the Git index. For a full local credential scan, also run `gitleaks git . --log-opts='--all' --redact`. Never disable checks to publish private configuration.
+
+## Code guide
 
 | Example | What to look for |
 | --- | --- |
@@ -61,7 +71,7 @@ CI never runs a real plan/apply, obtains cloud credentials, deploys a site or ch
 4. Configure a protected, encrypted remote backend with locking before shared/production use. The small example deliberately uses local state; use separate state and input configurations for staging and production.
 5. Review `terraform plan` before any deliberate `terraform apply`. Applying provisions billable resources and changes records in your chosen zone. No DNS-zone or registrar migration is automated.
 6. Upload your own static artifact and include `index.html` and `404.html`. This repo contains infrastructure, not a website build.
-7. For optional CI deployment, provision/import your GitHub OIDC provider, configure protected GitHub environments, and supply the exact subject claim and resource ARNs to `infra/examples/oidc`. Confirm the subject against your GitHub configuration rather than copying a production trust string.
+7. For optional CI deployment, use a separate private repository. Provision/import your GitHub OIDC provider there, configure protected GitHub environments, and supply the exact subject claim and resource ARNs to `infra/examples/oidc` through private configuration. Do not connect this public portfolio's workflows to production. Confirm the subject against your GitHub configuration rather than copying a production trust string.
 
 Budget alerts are not spending caps. Activate the Environment cost-allocation tag before relying on its filter and use an account-wide budget as a fallback. The default CloudFront price class prioritises cost over worldwide edge coverage; choose a class suitable for your users. ACM certificates for CloudFront use us-east-1; other regional defaults use Sydney.
 
